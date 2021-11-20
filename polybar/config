@@ -46,7 +46,7 @@ inherit = bar/primary
 monitor = ${env:MONITOR:eDP}
 modules-left = bspwm date i3
 module-center = popup-calendar
-module-right = memory cpu temperature pulseaudio wlan eth battery powermenu
+module-right = memory cpu temperature pulseaudio wlan battery nightshift powermenu
 
 [bar/primary]
 inherit = bar/example
@@ -91,11 +91,13 @@ module-margin-right = 10
 ;font-2 = siji:pixelsize=10;1
 font-0 = Cantarell::weight=bold:antialias=true:pixelsize=9;3
 #font-1 = Material Design Icons:antialias=true:size=11;3
-font-1 = Emoji:scale=3;1
+#font-1 = Emoji:scale=3;1
+;font-1 = FontAwesome5Free:style=Solid:size=10;4
+font-1 = FontAwesome:style=Regular:size=10;4
 
 modules-left = date i3
 modules-center = popup-calendar
-modules-right = memory cpu temperature backlight pulseaudio battery wlan powermenu 
+modules-right = memory cpu cpu-temp pulseaudio battery wlan nightshift powermenu 
 
 ;tray-position = right
 tray-padding = 0
@@ -210,11 +212,11 @@ label-urgent-padding = ${module/bspwm.label-urgent-padding}
 ; label-separator = |
 
 
-[module/check-night-shift]
+[module/night-shift]
 type = custom/script
+format = "Prova"
 exec = ~/.config/polybar/nightshift.sh
-interval = 5
-click-left = .config/polybar/toggle-nightlight.sh
+click-left = .config/polybar/togglenightshift.sh
 
 [module/mpd]
 type = internal/mpd
@@ -260,7 +262,7 @@ format-prefix-foreground = ${colors.foreground-alt}
 [module/cpu]
 type = internal/cpu
 interval = 2
-format-prefix = "CPU "
+format-prefix = " "
 format-prefix-foreground = ${colors.foreground-alt}
 format-underline = #f90000
 label = %percentage:2%%
@@ -268,7 +270,7 @@ label = %percentage:2%%
 [module/memory]
 type = internal/memory
 interval = 2
-format-prefix = "RAM "
+format-prefix = "RAM "
 format-prefix-foreground = ${colors.foreground-alt}
 format-underline = #4bffdc
 label = %percentage_used%%
@@ -280,13 +282,13 @@ interval = 3.0
 
 format-connected = <label-connected>
 format-connected-underline = #9f78e1
-label-connected = "online "
+label-connected = ""
 label-connected-foreground = ${colors.foreground-alt}
 
 format-disconnected =
 ;format-disconnected = <label-disconnected>
 ;format-disconnected-underline = ${self.format-connected-underline}
-label-disconnected = disconnected
+label-disconnected = ""
 label-disconnected-foreground = ${colors.foreground-alt}
 
 ramp-signal-0 = LINE
@@ -332,10 +334,10 @@ label = %date% %time%
 type = internal/pulseaudio
 
 format-volume = <label-volume>
-label-volume = VOL %percentage%%
+label-volume =  %percentage%%
 label-volume-foreground = ${root.foreground}
 
-label-muted = 🔇 muted
+label-muted = "muted"
 label-muted-foreground = #666
 
 bar-volume-width = 10
@@ -389,15 +391,17 @@ battery = BAT0
 adapter = AC
 full-at = 98
 
-format-charging-prefix = "BAT "
+format-charging-prefix = "  "
+format-charging-prefix-foreground = ${colors.foreground-alt}
 format-charging = <animation-charging> <label-charging>
-format-charging-underline = #ffb52a
+format-charging-underline = ${colors.foreground-alt}
 
-format-discharging-prefix = "BAT "
+
+format-discharging-prefix = " "
 format-discharging = <animation-discharging> <label-discharging>
 format-discharging-underline = ${self.format-charging-underline}
 
-format-full-prefix = "BAT "
+format-full-prefix = "  "
 format-full-prefix-foreground = ${colors.foreground-alt}
 format-full-underline = ${self.format-charging-underline}
 
@@ -418,13 +422,19 @@ animation-discharging-2 = 
 animation-discharging-foreground = ${colors.foreground-alt}
 animation-discharging-framerate = 750
 
+[module/cpu-temp]
+type = custom/script
+exec = ~/.config/polybar/cpu_temp.sh
+interval = 5
+format-prefix = " "
+
 [module/temperature]
 type = internal/temperature
 thermal-zone = 0
 warn-temperature = 60
 
 format = <ramp> <label>
-format-prefix = "TEMP "
+format-prefix = " "
 format-underline = #f50a4d
 format-warn = <ramp> <label-warn>
 format-warn-underline = ${self.format-underline}
@@ -445,7 +455,7 @@ expand-right = true
 format-spacing = 1
 format-underline = #BF616A
 
-label-open = "☠️"
+label-open = ""
 label-open-foreground = ${colors.foreground-alt}
 label-close = cancel
 label-close-foreground = ${colors.foreground-alt}
@@ -454,16 +464,18 @@ label-separator-foreground = ${colors.foreground-alt}
 
 menu-0-0 = reboot
 menu-0-0-exec = menu-open-1
-menu-0-1 = power off
-menu-0-1-exec = menu-open-2
+menu-0-1 = suspend
+menu-0-1-exec = systemctl suspend 
+menu-0-2 = power off
+menu-0-2-exec = menu-open-2
 
 menu-1-0 = cancel
 menu-1-0-exec = menu-open-0
 menu-1-1 = reboot
-menu-1-1-exec = sudo reboot
+menu-1-1-exec = reboot
 
 menu-2-0 = power off
-menu-2-0-exec = sudo shutdown now
+menu-2-0-exec = shutdown now
 menu-2-1 = cancel
 menu-2-1-exec = menu-open-0
 [settings]
