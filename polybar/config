@@ -43,21 +43,24 @@ alert = #bd2c40
 
 [bar/secondary]
 inherit = bar/primary
+enable-ipc = true
 monitor = ${env:MONITOR:eDP}
 modules-left = bspwm date i3
-module-center = popup-calendar
-module-right = memory cpu temperature pulseaudio wlan battery nightshift powermenu
+module-center = popup-calendar spotify
+module-right = memory cpu temperature pulseaudio wlan eth battery nightshift powermenu
 
 [bar/primary]
 inherit = bar/example
+enable-ipc = true
 monitor = ${env:MONITOR:HDMI-A-0}
 modules-left = bspwm date i3
-module-center = popup-calendar
+module-center = popup-calendar spotify
 module-right = memory cpu temperature pulseaudio wlan eth battery
 
 
 [bar/example]
 #inherit = section/base
+enable-ipc = true
 width = 100%
 height = 40
 offset-x = 0
@@ -93,11 +96,14 @@ font-0 = Cantarell::weight=bold:antialias=true:pixelsize=9;3
 #font-1 = Material Design Icons:antialias=true:size=11;3
 #font-1 = Emoji:scale=3;1
 ;font-1 = FontAwesome5Free:style=Solid:size=10;4
-font-1 = FontAwesome:style=Regular:size=10;4
-
+#font-1 = FontAwesome:style=Regular:size=10;4
+font-1 = Font Awesome 6 Free:pixelsize=10;3
+font-2 = Font Awesome 6 Free Solid:pixelsize=10;3
+font-3 = Font Awesome 6 Brands:pixelsize=10;3
 modules-left = date i3
-modules-center = popup-calendar
-modules-right = memory cpu cpu-temp pulseaudio battery wlan nightshift powermenu 
+modules-center = popup-calendar spotify previous playpause next 
+line-size = 2
+modules-right = memory cpu cpu-temp pulseaudio backlight battery xbacklight wlan eth bluetooth powermenu
 
 ;tray-position = right
 tray-padding = 0
@@ -109,12 +115,61 @@ tray-padding = 0
 
 ;scroll-up = bspwm-desknext
 ;scroll-down = bspwm-deskprev
+;
 
 ;scroll-up = i3wm-wsnext
 ;scroll-down = i3wm-wsprev
 
 cursor-click = pointer
 cursor-scroll = ns-resize
+
+[module/previous]
+type = custom/ipc
+format-font = 2
+; Default
+hook-0 = echo ""
+; When spotify active
+hook-1 = echo  
+click-left = "spotifyctl -q previous"
+
+
+[module/next]
+type = custom/ipc
+format-font = 2
+; Default
+hook-0 = echo ""
+; When spotify active
+hook-1 = echo  
+click-left = "spotifyctl -q next"
+
+
+[module/playpause]
+type = custom/ipc
+format-font = 2
+; Default
+hook-0 = echo ""
+; Playing
+hook-1 = echo 
+; Paused
+hook-2 = echo Play
+click-left = "spotifyctl -q playpause"
+
+[module/demo]
+type = custom/ipc
+hook-0 = echo foobar
+hook-1 = date +%s
+hook-2 = whoami
+initial = 1
+click-left = "#demo.hook.0"
+click-right = "#demo.hook.1"
+double-click-left = "#demo.hook.2"
+
+[module/spotify]
+type = custom/ipc
+; Default
+hook-0 = echo ""
+; Playing/paused show song name and artist
+hook-1 = spotifyctl -q status --format '  %artist%: %title%'
 
 [module/xwindow]
 type = internal/xwindow
@@ -211,6 +266,14 @@ label-urgent-padding = ${module/bspwm.label-urgent-padding}
 ; Separator in between workspaces
 ; label-separator = |
 
+[module/bluetooth]
+type = custom/script
+exec = /home/bartolosh/.config/polybar/bluetooth.sh
+interval = 2
+click-left = exec blueberry
+click-right = exec /home/bartolosh/.config/polybar/toggle_bluetooth.sh
+format-padding = 1
+format-foreground = #ffffff
 
 [module/night-shift]
 type = custom/script
@@ -236,7 +299,7 @@ type = internal/xbacklight
 
 format = <label> <bar>
 label = BL
-
+enable-scroll = true
 bar-width = 10
 bar-indicator = |
 bar-indicator-foreground = #fff
@@ -249,15 +312,16 @@ bar-empty-font = 2
 bar-empty-foreground = ${colors.foreground-alt}
 
 [module/backlight-acpi]
-inherit = module/xbacklight
+inherit = module/backlight
 type = internal/backlight
-card = intel_backlight
+card = amdgpu_bl0
 
 [module/backlight]
 type = internal/backlight
-card = intel_backlight
-format-prefix = "SRC "
-format-prefix-foreground = ${colors.foreground-alt}
+card = amdgpu_bl0
+format-prefix = " "
+format-prefix-foreground = ${colors.foreground}
+enable-scroll = true
 
 [module/cpu]
 type = internal/cpu
@@ -270,14 +334,14 @@ label = %percentage:2%%
 [module/memory]
 type = internal/memory
 interval = 2
-format-prefix = "RAM "
+format-prefix = " "
 format-prefix-foreground = ${colors.foreground-alt}
 format-underline = #4bffdc
 label = %percentage_used%%
 
 [module/wlan]
 type = internal/network
-interface = wlp1s0
+interface = wlan0
 interval = 3.0
 
 format-connected = <label-connected>
@@ -300,11 +364,11 @@ ramp-signal-foreground = ${colors.foreground-alt}
 
 [module/eth]
 type = internal/network
-interface = enp0s31f6
+interface = enp3s0f3u3u3
 interval = 3.0
 
 format-connected-underline = #55aa55
-format-connected-prefix = " "
+format-connected-prefix = " "
 format-connected-prefix-foreground = ${colors.foreground-alt}
 label-connected = %local_ip%
 
@@ -448,6 +512,14 @@ ramp-1 = 
 ramp-2 = 
 ramp-foreground = ${colors.foreground-alt}
 
+[module/polywins]
+type = custom/script
+exec = ~/.config/polybar/polywins.sh 2>/dev/null
+format = <label>
+label = %output%
+label-padding = 1
+tail = true
+
 [module/powermenu]
 type = custom/menu
 expand-right = true
@@ -465,7 +537,7 @@ label-separator-foreground = ${colors.foreground-alt}
 menu-0-0 = reboot
 menu-0-0-exec = menu-open-1
 menu-0-1 = suspend
-menu-0-1-exec = systemctl suspend 
+menu-0-1-exec = systemctl suspend
 menu-0-2 = power off
 menu-0-2-exec = menu-open-2
 

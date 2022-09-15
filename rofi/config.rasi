@@ -1,6 +1,28 @@
+
 configuration {
- modi: "window,drun,ssh,combi";
- theme: "Arc-Dark.rasi";
- font: "Cantarell 12";
- combi-modi: "window,drun,ssh";
+  show-icons:         true;
+  icon-theme:         "Papirus";
+  font: "Fira Code 12";
+  modi:	"window,ssh,drun,filebrowser";
+
+    drun {
+        display-name: "";
+
+    }
+    run {
+        display-name: " ";
+    }
+    window {
+        display-name: " ";
+    }
+
+    timeout {
+        delay: 10;
+        action: "kb-cancel";
+    }
 }
+
+//@theme "/usr/share/rofi/themes/onedark.rasi"
+//@theme "/usr/share/rofi/themes/material.rasi"
+//@theme "/usr/share/rofi/themes/nord-oneline.rasi"
+@theme "/usr/share/rofi/themes/Arc-Dark.rasi"
