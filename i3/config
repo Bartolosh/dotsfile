@@ -32,25 +32,27 @@ exec --no-startup-id pacmd set-default-sink alsa_output.pci-0000_03_00.6.analog-
 exec --no-startup-id nm-applet
 
 # configure border style
-new_window none
-new_float normal
+#new_window none
+default_border pixel 2
+#new_float normal
+default_floating_border pixel 2
 
 # hide borders
 hide_edge_borders none
 
 # Avoid tiling latte panel components
-for_window [class="Latte Dock"] floating enable;
+#for_window [class="Latte Dock"] floating enable;
 
 # i3 gaps
 for_window [class="^.*"] border pixel 2
 gaps inner 25
 gaps outer 5
 gaps top -15
-#border_radius 6
 for_window [class="Yad" title="yad-calendar"] floating enable
 bindsym $mod+minus gaps inner current minus 6
 bindsym $mod+plus gaps inner current plus 6
 
+#tiling_drag modifier
 #setting screen properly
 exec_always --no-startup-id xrandr --output HDMI-A-0 --primary --left-of eDP --auto
 exec_always --no-startup-id xrandr --output HDMI-1 --primary --left-of eDP-1 --auto
@@ -243,7 +245,6 @@ mode "resize" {
 }
 
 bindsym $mod+r mode "resize"
-
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
 #bar {
